@@ -47,10 +47,6 @@ def read_mpp(name="pattern.mpp"):
 
     meta, data = read_header(data)
 
-    print meta
-    print "XXXX"
-    print data
-
     if len(data) % 4 != 0:
         raise Exception("Not the correct data format (4 lines per point).")
     elif len(data) != 4 * meta["size"]:
@@ -60,4 +56,4 @@ def read_mpp(name="pattern.mpp"):
 
 
 if __name__ == '__main__':
-    print read_mpp("pattern.mpp")
+    print(read_mpp("pattern.mpp"))
