@@ -1,5 +1,7 @@
 import bpy
 
+import math 
+
 from bpy.props import StringProperty
 
 from . import fileio
@@ -95,6 +97,35 @@ class MPPManualAdd(bpy.types.Operator):
         return context.window_manager.invoke_props_dialog(self)
 
 
+class MPPCircleGenerator(bpy.types.Operator):
+    bl_idname = "mpp.generatorcircle"
+    bl_label = "Generate motor proteins in a circle"
+    
+    x = bpy.props.FloatProperty(name="x", default=0.0)
+    y = bpy.props.FloatProperty(name="y", default=0.0)
+    z = bpy.props.FloatProperty(name="z", default=0.0)
+    
+    r = bpy.props.FloatProperty(name="r", default=10.0)
+    
+    density = bpy.props.IntProperty(name="Density", default=1)
+    
+    def execute(self, context):
+        angle_start = 0.0
+        angle_end = 2.0 * math.pi
+        
+        angles = [angle_start + i * 0.01 * (angle_end - angle_start) for i in range(0, 100, self.density)]
+        
+        coordinates = [(self.r * math.cos(a), self.r * math.sin(a), self.z)
+                       for a in angles]
+        
+        create_proteins_from_list(coordinates)
+        return {'FINISHED'}
+            
+        
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+        
+        
 class MPPGridGenerator(bpy.types.Operator):
     bl_idname = "mpp.generatorgrid"
     bl_label = "Layout motor proteins in a grid"
@@ -148,7 +179,8 @@ class MainPanel(bpy.types.Panel):
         layout.label("Generators")
         row = layout.row()
         row.alignment = 'CENTER'
-        row.operator("mpp.generatorgrid", text="Generate a Grid")
+        row.operator("mpp.generatorgrid", text="Grid")
+        row.operator("mpp.generatorcircle", text="Circle")
 
 def register():
     bpy.utils.register_module(__name__)
