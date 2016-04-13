@@ -1,5 +1,7 @@
 import bpy
 
+from bpy.props import StringProperty
+
 from . import fileio
 
 bl_info = {
@@ -10,6 +12,29 @@ bl_info = {
 }
 
 
+class MPPReaderOperator(bpy.types.Operator):
+    bl_idname = "mpp.read"
+    bl_label = "Read .mpp"
+    
+    file_name = bpy.props.StringProperty(name="File", default=r"C:\Users\Dennis\Google Drive\dev\msc\pattern.mpp")
+
+    def execute(self, context):
+        print(fileio.read_mpp(self.file_name))
+        return {'FINISHED'}
+    
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
+
+class MPPWriterOperator(bpy.types.Operator):
+    bl_idname = "mpp.write"
+    bl_label = "Write .mpp"
+    name = bpy.props.StringProperty()
+
+    def execute(self, context):
+        return {'FINISHED'}
+
+        
 class MainPanel(bpy.types.Panel):
     bl_label = "Main panel"
     bl_space_type = "VIEW_3D"
@@ -23,25 +48,10 @@ class MainPanel(bpy.types.Panel):
         row.operator("mpp.read", text="Open .mpp")
         row.operator("mpp.write", text="Save As .mpp")
 
-
-class MPPReaderOperator(bpy.types.Operator):
-    bl_idname = "mpp.read"
-    bl_label = "Read .mpp"
-    name = bpy.props.StringProperty()
-
-    def execute(self, context):
-        print(fileio.read_mpp(self.name))
-        return {'FINISHED'}
-
-
-class MPPWriterOperator(bpy.types.Operator):
-    bl_idname = "mpp.write"
-    bl_label = "Write .mpp"
-    name = bpy.props.StringProperty()
-
-    def execute(self, context):
-        return {'FINISHED'}
-
+        layout.label("Functions")
+        row = layout.row()
+        row.alignment = 'CENTER'
+        row.operator("mpp.write", text="Add motor protein")
 
 def register():
     bpy.utils.register_module(__name__)
