@@ -124,8 +124,15 @@ class MPPCircleGenerator(bpy.types.Operator):
         
     def invoke(self, context, event):
         return context.window_manager.invoke_props_dialog(self)
-        
-        
+
+def horizontal_line(x_start, x_end, y, z):
+    return set((x, y, z) for x in range(x_start, x_end + 1))
+
+
+def vertical_line(x, y_start, y_end, z):
+    return set((x, y, z) for y in range(y_start, y_end + 1))
+
+
 class MPPGridGenerator(bpy.types.Operator):
     bl_idname = "mpp.generatorgrid"
     bl_label = "Layout motor proteins in a grid"
@@ -133,24 +140,35 @@ class MPPGridGenerator(bpy.types.Operator):
     grid_width = bpy.props.IntProperty(name="Grid width", default=5)
     grid_height = bpy.props.IntProperty(name="Grid Height", default=5)
     
-    tile_width = bpy.props.FloatProperty(name="Tile width", default=4.0)
-    tile_height = bpy.props.FloatProperty(name="Tile height", default=4.0)
+    tile_width = bpy.props.IntProperty(name="Tile width", default=3)
+    tile_height = bpy.props.IntProperty(name="Tile height", default=3)
     
     z = bpy.props.FloatProperty(name="Z-coordinate", default=0.0)
     
     density = bpy.props.IntProperty(name="Density", default=1)
 
     def execute(self, context):
+        width = self.grid_width * self.tile_width + self.grid_width
+        height = self.grid_height * self.tile_height + self.grid_height
+        
         x_min = 0
-        x_max = self.grid_width
+        x_max = width
         y_min = 0
-        y_max = self.grid_height
+        y_max = height
         
-        xs = range(x_min, x_max * self.density)
-        ys = range(y_min, y_max * self.density)
+        xs = [x for x in range(x_min, x_max + 1) if int(x) % (self.tile_width + 1) == 0]
+        ys = [y for y in range(y_min, y_max + 1) if int(y) % (self.tile_height + 1) == 0]
         
-        grid_points = [(x, y) for x in xs for y in ys if x % self.density == 0 or y % self.density == 0]
-        coordinates = [(x * self.tile_width, y * self.tile_height, self.z) for x in xs for y in ys]
+        sets = [x for y in ys for x in horizontal_line(x_min, x_max, y, self.z)]
+        sets.extend([y for x in xs for y in vertical_line(x, y_min, y_max, self.z)])
+        
+        coordinates = sets
+        
+        # xs = range(x_min, x_max * self.density)
+        # ys = range(y_min, y_max * self.density)
+        
+        # grid_points = [(x, y) for x in xs for y in ys if x % self.density == 0 or y % self.density == 0]
+        # coordinates = [(x * self.tile_width, y * self.tile_height, self.z) for x in xs for y in ys]
         
         create_proteins_from_list(coordinates)
         return {'FINISHED'}
