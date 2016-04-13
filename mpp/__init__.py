@@ -190,14 +190,17 @@ class MainPanel(bpy.types.Panel):
         row.operator("mpp.read", text="Open .mpp")
         row.operator("mpp.write", text="Save As .mpp")
         
-        layout.label("Manual")
+        layout.label("Manually add")
         row = layout.row()
-        row.operator("mpp.manual_add", text="Manually add a motor protein")
+        row.alignment = 'CENTER'
+        row.operator("mpp.manual_add", text="Motor protein")
 
         layout.label("Generators")
         row = layout.row()
         row.alignment = 'CENTER'
         row.operator("mpp.generatorgrid", text="Grid")
+        row = layout.row()
+        row.alignment = 'CENTER'
         row.operator("mpp.generatorcircle", text="Circle")
 
 def register():
