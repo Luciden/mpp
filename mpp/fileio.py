@@ -41,9 +41,10 @@ def read_body(data):
     return coordinates
 
 
-def read_mpp(name="pattern.mpp"):
-    with open(name) as f:
+def read_mpp(name):
+    with open(name, "r") as f:
         data = f.readlines()
+    f.close()
 
     meta, data = read_header(data)
 
@@ -53,6 +54,8 @@ def read_mpp(name="pattern.mpp"):
         raise Exception("Not the correct number of data points.")
 
     return read_body(data)
+
+    
 
 
 if __name__ == '__main__':
