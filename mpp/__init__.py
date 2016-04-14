@@ -62,7 +62,8 @@ def write_mpp(name, coordinates):
         f.write("size: {:d}\n".format(len(coordinates)))
         for x, y, z in coordinates:
             f.write("h\n")
-            f.write("{:f}\n{:f}\n{:f}\n".format(x, y, z))
+            # Switch y and z axes
+            f.write("{:f}\n{:f}\n{:f}\n".format(x, z, y))
         
     f.close()
 
